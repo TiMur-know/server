@@ -18,9 +18,37 @@ router.get('/', async (req, res) => {
   }
 });
 router.post('/services',img.single('photo'), async(req,res)=>{
-    
+  const { id, name, description, price, gender, type } = req.body;
+  const photo = req.file ? req.file.path : null;
+
+  try {
+    if (type === 'cosmetology') {
+      if (id) {
+        await CosmetologyService.update(
+          { name, description, price, photo },
+          { where: { id } }
+        );
+      } else {
+        await CosmetologyService.create({ name, description, price, photo });
+      }
+    } else if (type === 'hairdressing') {
+      if (id) {
+        await HairdressingService.update(
+          { name, description, price, gender, photo },
+          { where: { id } }
+        );
+      } else {
+        await HairdressingService.create({ name, description, price, gender, photo });
+      }
+    }
+
+    res.status(200).json({ message: 'Service saved successfully' });
+  } catch (error) {
+    console.error('Error saving service:', error);
+    res.status(500).json({ error: 'Error saving service' });
+  }
 })
-router.delete('/services/:id/:type', async (req, res) => {
+router.delete('/services/:type/:id', async (req, res) => {
     const { id, type } = req.params;
   
     try {
