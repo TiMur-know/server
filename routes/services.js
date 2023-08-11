@@ -17,28 +17,36 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Error fetching services' });
   }
 });
-router.post('/',img.single('photo'), async(req,res)=>{
+router.post('/add',img.single('photo'), async(req,res)=>{
   const { id, name, description, price, gender, type } = req.body;
-  const photo = req.file ? req.file.path : null;
+  let photoPath = null;
+
+  if (req.file) {
+    const imagePath = req.file.path;
+    const photoFileName = `${Date.now()}_${path.basename(imagePath)}`;
+    photoPath = `img/${type}/${photoFileName}`;
+
+    fs.renameSync(imagePath, photoPath); 
+  }
 
   try {
     if (type === 'cosmetology') {
       if (id) {
         await CosmetologyService.update(
-          { name, description, price, photo },
+          { name, description, price, photo: photoPath },
           { where: { id } }
         );
       } else {
-        await CosmetologyService.create({ name, description, price, photo });
+        await CosmetologyService.create({ name, description, price, photo: photoPath });
       }
     } else if (type === 'hairdressing') {
       if (id) {
         await HairdressingService.update(
-          { name, description, price, gender, photo },
+          { name, description, price, gender, photo: photoPath },
           { where: { id } }
         );
       } else {
-        await HairdressingService.create({ name, description, price, gender, photo });
+        await HairdressingService.create({ name, description, price, gender, photo: photoPath });
       }
     }
 
