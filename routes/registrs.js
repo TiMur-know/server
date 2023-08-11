@@ -6,6 +6,8 @@ const CosmetologyReceipt = models.CosmetologyReceipt
 const HairdressingReceipt = models.HairdressingReceipt
 const CosmetologyService = models.CosmetologyService
 const HairdressingService = models.HairdressingService
+const CosmetologyReceipts_Registr = models.CosmetologyReceipts_Registr
+const HairdressingReceipts_Registr = models.HairdressingReceipts_Registr
 const Client =models.Client
 router.get('/', async (req, res) => {
     try {
@@ -36,11 +38,15 @@ router.post("/",async(req,res)=>{
     const { dateStart, dateEnd, hairdressingReceipts, cosmetologyReceipts } = req.body;
 
   try {
+    console.log(req.body)
+    const totalCost = await calculateTotalCost(hairdressingReceipts, cosmetologyReceipts);
+    console.log(totalCost)
     const newRegistr = await Registr.create({
       date_start: dateStart,
       date_end: dateEnd,
-      total_cost: calculateTotalCost(hairdressingReceipts, cosmetologyReceipts),
+      total_cost: totalCost,
     });
+    console.log(newRegistr)
     if (hairdressingReceipts && hairdressingReceipts.length > 0) {
       await HairdressingReceipts_Registr.bulkCreate(
         hairdressingReceipts.map(receiptId => ({
