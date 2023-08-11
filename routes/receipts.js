@@ -28,5 +28,46 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Error fetching services' });
   }
 });
+router.post('/', async (req, res) => {
+    const { selectedService, selectedClient, isEditClient, clientData } = req.body;
+    try {
+        let receiptData = {
+        date_time: new Date(),  
+        total_cost: selectedService.price, 
+        };
 
+        if (isEditClient) {
+        const { lastname, firstname, age, email, phone } = clientData;
+        let updatedClient;
+
+        if (selectedClient) {
+            updatedClient = await Client.update(
+            { lastname, firstname, age, email, phone },
+            { where: { id: selectedClient.id } }
+            );
+        } else {
+            updatedClient = await Client.create({ lastname, firstname, age, email, phone });
+            receiptData.ClientId = updatedClient.id;
+        }
+        }
+
+        if (selectedService.type === 'Косметология') {
+        const cosmetologyReceipt = await CosmetologyReceipt.create(receiptData);
+        await cosmetologyReceipt.setCosmetologyService(selectedService.id);
+        if (selectedClient) {
+            await cosmetologyReceipt.setClient(selectedClient.id);
+        }
+        } else if (selectedService.type === 'Перукарня') {
+        const hairdressingReceipt = await HairdressingReceipt.create(receiptData);
+        await hairdressingReceipt.setHairdressingService(selectedService.id);
+        if (selectedClient) {
+            await hairdressingReceipt.setClient(selectedClient.id);
+        }
+        }
+        res.json({ message: 'Order saved successfully' });
+    } catch (error) {
+      console.error('Error saving order:', error);
+      res.status(500).json({ error: 'Error saving order' });
+    }
+  });
 module.exports = router;
