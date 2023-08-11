@@ -2,6 +2,7 @@ const express =require('express');
 const router=express.Router();
 const {models } = require('../models');
 const User=models.User
+const { Op } = require('sequelize');
 const Worker=models.Worker
 console.log('work user')
 router.get('/',async(req,res)=>{
@@ -14,7 +15,7 @@ router.get('/',async(req,res)=>{
     }
 });
 
-router.put('/', async (req, res) => {
+router.post('/', async (req, res) => {
     let { updatedUsers, updatedWorkers } = req.body;
 
   try {
