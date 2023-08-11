@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { models } = require('../models');
 const multer = require('multer');
-
+const path = require('path');
 const CosmetologyService = models.CosmetologyService;
 const HairdressingService = models.HairdressingService;
 const img = multer({ dest: 'img/' });
