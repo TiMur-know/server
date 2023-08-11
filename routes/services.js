@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Error fetching services' });
   }
 });
-router.post('/services',img.single('photo'), async(req,res)=>{
+router.post('/',img.single('photo'), async(req,res)=>{
   const { id, name, description, price, gender, type } = req.body;
   const photo = req.file ? req.file.path : null;
 
@@ -48,7 +48,7 @@ router.post('/services',img.single('photo'), async(req,res)=>{
     res.status(500).json({ error: 'Error saving service' });
   }
 })
-router.delete('/services/:type/:id', async (req, res) => {
+router.delete('/:type/:id', async (req, res) => {
     const { id, type } = req.params;
   
     try {
