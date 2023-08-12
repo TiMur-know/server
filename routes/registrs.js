@@ -36,7 +36,9 @@ router.get('/', async (req, res) => {
 });
 router.post("/",async(req,res)=>{
     const { dateStart, dateEnd, hairdressingReceipts, cosmetologyReceipts } = req.body;
-
+    dateEnd.setHours(23);
+    dateEnd.setMinutes(59);
+    dateEnd.setSeconds(59);
   try {
     console.log(req.body)
     const totalCost = await calculateTotalCost(hairdressingReceipts, cosmetologyReceipts);

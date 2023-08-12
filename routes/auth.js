@@ -1,6 +1,7 @@
 const express =require('express');
 const router=express.Router();
 const {models } = require('../models');
+const bcrypt =require('bcrypt')
 const User=models.User;
 const Worker = models.Worker
 router.get('/check', async (req, res) => {
@@ -23,7 +24,7 @@ router.post('/enter', async (req, res) => {
         where: { username, password },
       });
   
-      if (user) {
+      if (user && bcrypt.compareSync(password, user.password)) {
         res.json({ success: true, user });
       } else {
         res.json({ success: false, message: 'Invalid credentials' });
@@ -36,10 +37,10 @@ router.post('/enter', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password, firstname, lastname, phone, age } = req.body;
-      
+        const hashedPassword = bcrypt.hashSync(password, 10);
       const user = await User.create({
         username:username,
-        password:password,
+        password:hashedPassword,
         email:email,
         role:'USER'
       });
